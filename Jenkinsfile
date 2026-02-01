@@ -18,21 +18,21 @@ pipeline {
         stage('Étape 2: Compilation') {
             steps {
                 // On compile le code sans lancer les tests pour l'instant
-                sh 'mvn clean compile'
+                bat 'mvn clean compile'
             }
         }
 
         stage('Étape 3: Tests Unitaires') {
             steps {
                 // On lance les tests JUnit
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
 
         stage('Étape 4: Packaging (.war)') {
             steps {
                 // On génère le fichier .war dans le dossier target/
-                sh 'mvn package -DskipTests'
+                bat 'mvn package -DskipTests'
                 echo "Le fichier WAR a été généré avec succès."
             }
         }

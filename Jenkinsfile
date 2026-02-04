@@ -41,5 +41,15 @@ pipeline {
                 bat 'mvn package -DskipTests'
             }
         }
+        stage(' Docker Build & Push') {
+            steps {
+                // Construction de l'image (Remplace 'ton-pseudo' par ton login Docker Hub)
+                bat 'docker build -t zak44/tp-devops-j2ee:1.0 .'
+                
+                // Publication sur Docker Hub
+                // Note: Tu dois être connecté à Docker Desktop sur ton PC pour que cela fonctionne
+                bat 'docker push zak44/tp-devops-j2ee:1.0'
+            }
+        }
     }
 }

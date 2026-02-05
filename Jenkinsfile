@@ -43,20 +43,20 @@ pipeline {
         }
         stage('Docker Build & Push') {
             steps {
-                // Étape A: Build de l'image (SANS authentification pour éviter le bug 401 au pull)
+                // 1. Déconnexion préalable pour nettoyer toute session erronée
+                bat 'docker logout'
+
+                // 2. Build de l'image (Utilise l'accès anonyme par défaut, plus fiable pour Tomcat)
                 bat 'docker build -t zak44/tp-devops-j2ee:1.0 .'
 
-                // Étape B: Authentification et Push (UNIQUEMENT quand on a besoin du token)
+                // 3. Authentification UNIQUEMENT pour le Push
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', 
                                 usernameVariable: 'DOCKER_USER', 
                                 passwordVariable: 'DOCKER_TOKEN')]) {
                     
-                    // On se connecte juste avant de pousser
+                    // On utilise le token proprement
                     bat "echo %DOCKER_TOKEN% | docker login -u %DOCKER_USER% --password-stdin"
                     bat 'docker push zak44/tp-devops-j2ee:1.0'
-                    
-                    // Optionnel: Se déconnecter pour la sécurité
-                    bat 'docker logout'
                 }
             }
         }

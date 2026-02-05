@@ -43,20 +43,20 @@ pipeline {
         }
         stage('Docker Build & Push') {
             steps {
-                // 1. Construction de l'image (Étape 4 du TP)
-                bat 'docker build -t zak44/tp-devops-j2ee:1.0 .' 
+                // Étape A: Build de l'image (SANS authentification pour éviter le bug 401 au pull)
+                bat 'docker build -t zak44/tp-devops-j2ee:1.0 .'
 
-                // 2. Connexion et Publication sécurisée
-                // On appelle l'ID que tu as créé dans Jenkins
+                // Étape B: Authentification et Push (UNIQUEMENT quand on a besoin du token)
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', 
                                 usernameVariable: 'DOCKER_USER', 
                                 passwordVariable: 'DOCKER_TOKEN')]) {
                     
-                    // Connexion au Docker Hub en utilisant le token comme mot de passe
+                    // On se connecte juste avant de pousser
                     bat "echo %DOCKER_TOKEN% | docker login -u %DOCKER_USER% --password-stdin"
+                    bat 'docker push zak44/tp-devops-j2ee:1.0'
                     
-                    // Envoi de l'image (Étape 4.41 du TP)
-                    bat 'docker push zak44/tp-devops-j2ee:1.0' 
+                    // Optionnel: Se déconnecter pour la sécurité
+                    bat 'docker logout'
                 }
             }
         }

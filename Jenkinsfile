@@ -60,5 +60,18 @@ pipeline {
                 }
             }
         }
+        stage('Step 7: Kubernetes Deployment') {
+            steps {
+                script {
+                    // On applique les fichiers YAML situés dans le dossier k8s
+                    bat 'kubectl apply -f k8s/'
+                    
+                    // On force le redémarrage des pods pour utiliser la dernière image poussée
+                    bat 'kubectl rollout restart deployment/jee-app'
+                    
+                    echo "L'application a été déployée et mise à jour sur Kubernetes."
+                }
+            }
+        }
     }
 }

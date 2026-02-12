@@ -18,9 +18,15 @@ import net.javaguides.usermanagement.model.User;
  *
  */
 public class UserDAO {
-	private String jdbcURL = "jdbc:mysql://localhost:3306/demo?useSSL=false";
-	private String jdbcUsername = "root";
-	private String jdbcPassword = "root";
+	// On récupère les variables d'environnement injectées par Kubernetes
+    // Si elles n'existent pas (test local), on garde localhost
+    private String dbHost = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
+    private String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "demo";
+    
+    // Reconstruction dynamique de l'URL JDBC
+    private String jdbcURL = "jdbc:mysql://" + dbHost + ":3306/" + dbName + "?useSSL=false&allowPublicKeyRetrieval=true";
+    private String jdbcUsername = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
+    private String jdbcPassword = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "root";
 
 	private static final String INSERT_USERS_SQL = "INSERT INTO users" + "  (name, email, country) VALUES "
 			+ " (?, ?, ?);";
@@ -41,7 +47,7 @@ public class UserDAO {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

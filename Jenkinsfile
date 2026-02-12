@@ -60,17 +60,20 @@ pipeline {
                 }
             }
         }
-       stage(': Kubernetes Deployment') {
+       stage('Step 5: Kubernetes Deployment') {
             steps {
                 script {
-                    // --validate=false : ignore la validation en ligne
-                    // --openapi-patch=false : empêche de chercher les schémas sur le réseau
-                    bat 'kubectl apply -f k8s/ --validate=false --openapi-patch=false'
-                    
-                    // Forcer le redémarrage pour charger la nouvelle image Docker (UserDAO corrigé)
-                    bat 'kubectl rollout restart deployment/jee-app'
-                    
-                    echo "Déploiement Kubernetes forcé en mode local réussi."
+                    // 1. On définit la variable d'environnement pour ignorer le proxy localement
+                    withEnv(['NO_PROXY=127.0.0.1,localhost']) {
+                        
+                        // 2. Commande de déploiement "brute"
+                        // --force : écrase les conflits de métadonnées
+                        // --validate=false : ignore les schémas OpenAPI (cause du HTML reçu)
+                        bat 'kubectl apply -f k8s/ --validate=false --force'
+                        
+                        // 3. Restart pour garantir l'utilisation de la nouvelle image
+                        bat 'kubectl rollout restart deployment/jee-app'
+                    }
                 }
             }
         }

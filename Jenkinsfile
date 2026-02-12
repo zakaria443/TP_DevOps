@@ -60,16 +60,18 @@ pipeline {
                 }
             }
         }
-        stage('Step 7: Kubernetes Deployment') {
+       stage(' Kubernetes Deployment') {
             steps {
                 script {
-                    // On ajoute --validate=false pour ignorer l'erreur d'authentification réseau
-                    bat 'kubectl apply -f k8s/ --validate=false'
+                    // --validate=false : ignore la validation du schéma
+                    // --dry-run=none : assure que la commande s'exécute réellement
+                    // --server-side=false : force le traitement par le client local
+                    bat 'kubectl apply -f k8s/ --validate=false --dry-run=none'
                     
-                    // On force le redémarrage pour appliquer les changements du UserDAO
+                    // Redémarrage pour appliquer les changements du UserDAO
                     bat 'kubectl rollout restart deployment/jee-app'
                     
-                    echo "Déploiement Kubernetes réussi sans validation externe."
+                    echo "Déploiement forcé réussi."
                 }
             }
         }

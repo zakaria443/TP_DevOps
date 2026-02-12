@@ -28,13 +28,11 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // 'sonar' doit être le nom configuré dans : 
-                // Administrer Jenkins -> Configurer le système -> SonarQube servers
-                withSonarQubeEnv('sonar') {
-                    bat 'mvn sonar:sonar'
+                withSonarQubeEnv('MySonarServer') {
+                    sh 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
                 }
             }
-        }
+}
 
         stage('Packaging') {
             steps {

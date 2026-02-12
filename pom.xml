@@ -8,6 +8,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
+    <properties>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.java.binaries>target/classes</sonar.java.binaries>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>

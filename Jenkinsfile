@@ -28,12 +28,12 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('MySonarServer') {
-                    sh 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
+                withSonarQubeEnv('sonar') {
+                    // Utilise des "/" même sous Windows pour Maven, ou vérifie le chemin relatif
+                    bat 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
                 }
             }
-}
-
+        }
         stage('Packaging') {
             steps {
                 bat 'mvn package -DskipTests'

@@ -63,13 +63,13 @@ pipeline {
         stage('Step 7: Kubernetes Deployment') {
             steps {
                 script {
-                    // On applique les fichiers YAML situés dans le dossier k8s
-                    bat 'kubectl apply -f k8s/'
+                    // On ajoute --validate=false pour ignorer l'erreur d'authentification réseau
+                    bat 'kubectl apply -f k8s/ --validate=false'
                     
-                    // On force le redémarrage des pods pour utiliser la dernière image poussée
+                    // On force le redémarrage pour appliquer les changements du UserDAO
                     bat 'kubectl rollout restart deployment/jee-app'
                     
-                    echo "L'application a été déployée et mise à jour sur Kubernetes."
+                    echo "Déploiement Kubernetes réussi sans validation externe."
                 }
             }
         }

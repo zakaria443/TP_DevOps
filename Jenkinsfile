@@ -60,18 +60,17 @@ pipeline {
                 }
             }
         }
-       stage(' Kubernetes Deployment') {
+       stage(': Kubernetes Deployment') {
             steps {
                 script {
-                    // --validate=false : ignore la validation du schéma
-                    // --dry-run=none : assure que la commande s'exécute réellement
-                    // --server-side=false : force le traitement par le client local
-                    bat 'kubectl apply -f k8s/ --validate=false --dry-run=none'
+                    // --validate=false : ignore la validation en ligne
+                    // --openapi-patch=false : empêche de chercher les schémas sur le réseau
+                    bat 'kubectl apply -f k8s/ --validate=false --openapi-patch=false'
                     
-                    // Redémarrage pour appliquer les changements du UserDAO
+                    // Forcer le redémarrage pour charger la nouvelle image Docker (UserDAO corrigé)
                     bat 'kubectl rollout restart deployment/jee-app'
                     
-                    echo "Déploiement forcé réussi."
+                    echo "Déploiement Kubernetes forcé en mode local réussi."
                 }
             }
         }

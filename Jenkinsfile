@@ -63,16 +63,16 @@ pipeline {
        stage('Step 5: Kubernetes Deployment') {
             steps {
                 script {
-                    // 1. On définit la variable d'environnement pour ignorer le proxy localement
-                    withEnv(['NO_PROXY=127.0.0.1,localhost']) {
+                    // On force explicitement toutes les variables de proxy à être vides
+                    withEnv(['HTTP_PROXY=', 'HTTPS_PROXY=', 'http_proxy=', 'https_proxy=', 'NO_PROXY=localhost,127.0.0.1']) {
                         
-                        // 2. Commande de déploiement "brute"
-                        // --force : écrase les conflits de métadonnées
-                        // --validate=false : ignore les schémas OpenAPI (cause du HTML reçu)
-                        bat 'kubectl apply -f k8s/ --validate=false --force'
+                        // On utilise --validate=false pour éviter tout appel réseau externe
+                        bat 'kubectl apply -f k8s/ --validate=false'
                         
-                        // 3. Restart pour garantir l'utilisation de la nouvelle image
+                        // On redémarre les pods pour appliquer la nouvelle image
                         bat 'kubectl rollout restart deployment/jee-app'
+                        
+                        echo "Déploiement réussi sur le nouveau réseau Wi-Fi."
                     }
                 }
             }
